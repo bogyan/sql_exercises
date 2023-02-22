@@ -1,0 +1,149 @@
+select * from hr.employees
+where first_name = 'David';
+
+select * from hr.employees
+where job_id = 'FI_ACCOUNT';
+
+select first_name, last_name, salary, department_id from hr.employees
+where department_id = 50 and salary > 4000;
+
+select * from hr.employees
+where department_id = 20 or department_id = 30;
+
+select * from hr.employees
+where first_name like '_a%a';
+
+select * from hr.employees
+where (department_id = 50 or department_id = 80) and commission_pct is not null
+order by 4;
+
+select * from hr.employees
+where first_name like '%n%n' or first_name like '%nn%';
+
+select * from hr.employees
+where first_name like '_____%'
+order by department_id DESC nulls last;
+
+select * from hr.employees
+where (salary between 3000 and 7000) and (commission_pct is null) and job_id in ('PU_CLERK',
+'ST_MAN', 'ST_CLERK');
+
+#w imieniu znajduje się '%'
+select * from hr.employees
+where first_name like '%\%%' ESCAPE '\';
+
+select job_id, first_name, salary from hr.employees
+where employee_id >= 120 and job_id != 'IT_PROG'
+order by job_id, first_name DESC;
+
+select * from hr.employees
+where length(first_name) > 10;
+
+select * from hr.employees
+where MOD(salary, 1000) = 0;
+
+select phone_number, SUBSTR(phone_number, 0, 3) from hr.employees
+WHERE phone_number LIKE '___.___.____); -- zapomniałem o where
+
+select * from hr.employees
+where LENGTH(first_name) > 5 and INSTR(first_name, 'm') = LENGTH(first_name);
+
+select NEXT_DAY(SYSDATE, 'friday') from dual;
+
+select * from hr.employees
+where MONTHS_BETWEEN(SYSDATE, hire_date) > 150;
+
+select REPLACE(phone_number, '.', '-') from hr.employees;
+
+select CONCAT(CONCAT(CONCAT(CONCAT(UPPER(first_name), ' '), LOWER(email)), ' '), job_id) from hr.employees;
+
+select CONCAT(first_name, salary) from hr.employees;
+
+select hire_date, ROUND(hire_date, 'MM'), ROUND(hire_date, 'YYYY') from hr.employees;
+
+select RPAD(first_name, 10, '$'), LPAD(last_name, 15, '!')  from hr.employees;
+
+select first_name, INSTR(first_name, 'a', 1, 2) from hr.employees; 
+
+select TRIM('!' from '!!!HELLO!! MY FRIEND!!!!!!!!') from dual;
+
+select salary, salary*3.1415, ROUND(salary*3.1415), ROUND(salary*3.1415, -3) from hr.employees;
+
+select hire_date, ADD_MONTHS(hire_date, 6), LAST_DAY(hire_date) from hr.employees;
+
+select * from hr.employees
+where LENGTH(first_name) = (select MAX(LENGTH(first_name)) from hr.employees);
+
+select * from hr.employees
+WHERE salary > (select AVG(salary) from hr.employees);
+
+select city from hr.employees JOIN hr.departments USING (department_id) JOIN hr.locations USING (location_id)
+group by city
+HAVING SUM(salary) = (select MIN(SUM(salary)) from hr.employees JOIN hr.departments USING (department_id) JOIN hr.locations USING (location_id)
+group by city);
+
+select * from hr.employees
+WHERE employee_id = ANY(select manager_id from hr.employees) AND salary > 15000; 
+
+select * from hr.departments
+WHERE department_id NOT IN (select distinct department_id from hr.employees where department_id is not null);
+
+select * from hr.employees
+WHERE employee_id NOT IN (select manager_id from hr.employees where manager_id is not null); 
+
+select * from hr.employees
+WHERE employee_id = ANY(select manager_id from hr.employees) AND employee_id = ANY(select emp2.employee_id from hr.employees emp1 JOIN hr.employees emp2 ON(emp1.manager_id=emp2.employee_id)
+group by emp2.employee_id
+HAVING COUNT(emp2.employee_id) > 6);
+
+select * from hr.employees
+WHERE department_id = (select department_id from hr.departments where department_name LIKE 'IT');
+
+select * from hr.employees
+WHERE hire_date < TO_DATE('01/01/2005', 'DD/MM/YYYY')
+    AND manager_id IN (select employee_id from hr.employees 
+        WHERE employee_id IN (select distinct manager_id from hr.employees where manager_id is not null) AND hire_date > TO_DATE('01/01/2005', 'DD/MM/YYYY') and hire_date < TO_DATE('01/01/2006', 'DD/MM/YYYY'));
+        
+select * from hr.employees
+WHERE manager_id IN (select employee_id from hr.employees 
+        WHERE employee_id IN (select distinct manager_id from hr.employees where manager_id is not null) AND TO_CHAR(hire_date, 'mm')='01') AND job_id IN (select job_id from hr.jobs 
+            WHERE LENGTH(job_title)>15);
+
+select * from hr.employees JOIN hr.jobs USING(job_id)
+WHERE employee_id IN ('156');
+select * from hr.departments;
+select * from hr.jobs;
+
+SELECT TO_CHAR(manager_id) man_id, to_char(null) job_id, to_char(null) dep_id, SUM(salary) from hr.employees
+group by manager_id 
+UNION
+SELECT to_char(null), job_id, to_char(null), SUM(salary) from hr.employees
+group by job_id
+UNION
+SELECT to_char(null), to_char(null), TO_CHAR(department_id) dep_id, SUM(salary) from hr.employees
+group by department_id;
+
+select department_id, department_name from hr.employees emp JOIN hr.departments USING (department_id)
+where emp.manager_id = 100
+MINUS
+select department_id, department_name from hr.employees emp JOIN hr.departments USING (department_id)
+where emp.manager_id IN (145, 201);
+
+select distinct first_name, last_name, salary from hr.employees
+where first_name like '_a%'
+INTERSECT
+select distinct first_name, last_name, salary from hr.employees
+where LOWER(last_name) LIKE '%s%'
+ORDER BY salary DESC;
+
+select location_id, postal_code, city from hr.locations
+where country_id IN ('IT', 'DE')
+UNION
+select location_id, postal_code, city from hr.locations
+where postal_code LIKE '%9%';
+
+select country_id, country_name, region_name from hr.countries JOIN hr.regions USING (region_id)
+where LENGTH(country_name) > 8
+UNION 
+select country_id, country_name, region_name from hr.countries JOIN hr.regions USING (region_id)
+WHERE region_id != 1;
