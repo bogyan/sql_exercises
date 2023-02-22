@@ -43,7 +43,7 @@ select * from hr.employees
 where MOD(salary, 1000) = 0;
 
 select phone_number, SUBSTR(phone_number, 0, 3) from hr.employees
-WHERE phone_number LIKE '___.___.____); -- zapomniałem o where
+WHERE phone_number LIKE '___.___.____);
 
 select * from hr.employees
 where LENGTH(first_name) > 5 and INSTR(first_name, 'm') = LENGTH(first_name);
@@ -77,10 +77,8 @@ where LENGTH(first_name) = (select MAX(LENGTH(first_name)) from hr.employees);
 select * from hr.employees
 WHERE salary > (select AVG(salary) from hr.employees);
 
-select city from hr.employees JOIN hr.departments USING (department_id) JOIN hr.locations USING (location_id)
-group by city
-HAVING SUM(salary) = (select MIN(SUM(salary)) from hr.employees JOIN hr.departments USING (department_id) JOIN hr.locations USING (location_id)
-group by city);
+select city from hr.employees JOIN hr.departments USING (department_id) JOIN hr.locations USING (location_id) group by city
+HAVING SUM(salary) = (select MIN(SUM(salary)) from hr.employees JOIN hr.departments USING (department_id) JOIN hr.locations USING (location_id) group by city);
 
 select * from hr.employees
 WHERE employee_id = ANY(select manager_id from hr.employees) AND salary > 15000; 
@@ -92,7 +90,8 @@ select * from hr.employees
 WHERE employee_id NOT IN (select manager_id from hr.employees where manager_id is not null); 
 
 select * from hr.employees
-WHERE employee_id = ANY(select manager_id from hr.employees) AND employee_id = ANY(select emp2.employee_id from hr.employees emp1 JOIN hr.employees emp2 ON(emp1.manager_id=emp2.employee_id)
+WHERE employee_id = ANY(select manager_id from hr.employees) AND employee_id = ANY(select emp2.employee_id from hr.employees emp1 JOIN hr.employees emp2 ON
+(emp1.manager_id=emp2.employee_id)
 group by emp2.employee_id
 HAVING COUNT(emp2.employee_id) > 6);
 
@@ -102,17 +101,16 @@ WHERE department_id = (select department_id from hr.departments where department
 select * from hr.employees
 WHERE hire_date < TO_DATE('01/01/2005', 'DD/MM/YYYY')
     AND manager_id IN (select employee_id from hr.employees 
-        WHERE employee_id IN (select distinct manager_id from hr.employees where manager_id is not null) AND hire_date > TO_DATE('01/01/2005', 'DD/MM/YYYY') and hire_date < TO_DATE('01/01/2006', 'DD/MM/YYYY'));
+        WHERE employee_id IN (select distinct manager_id from hr.employees where manager_id is not null) AND hire_date > TO_DATE('01/01/2005', 'DD/MM/YYYY') and 
+        hire_date < TO_DATE('01/01/2006', 'DD/MM/YYYY'));
         
 select * from hr.employees
 WHERE manager_id IN (select employee_id from hr.employees 
-        WHERE employee_id IN (select distinct manager_id from hr.employees where manager_id is not null) AND TO_CHAR(hire_date, 'mm')='01') AND job_id IN (select job_id from hr.jobs 
+        WHERE employee_id IN (select distinct manager_id from hr.employees where manager_id is not null) AND TO_CHAR(hire_date, 'mm')='01') AND 
+        job_id IN (select job_id from hr.jobs 
             WHERE LENGTH(job_title)>15);
 
-select * from hr.employees JOIN hr.jobs USING(job_id)
-WHERE employee_id IN ('156');
-select * from hr.departments;
-select * from hr.jobs;
+select * from hr.employees JOIN hr.jobs USING(job_id) WHERE employee_id IN ('156');
 
 SELECT TO_CHAR(manager_id) man_id, to_char(null) job_id, to_char(null) dep_id, SUM(salary) from hr.employees
 group by manager_id 
