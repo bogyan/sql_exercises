@@ -1,0 +1,82 @@
+select last_name, department_name, ee.department_id, city from employees ee, departments dd, locations ll where ee.department_id = dd.department_id
+and ll.location_id = dd.location_id;
+
+select last_name, department_name, ee.department_id from employees ee, departments dd where ee.department_id = dd.department_id(+);
+
+select last_name, department_name, ee.department_id from employees ee inner join departments dd on ee.department_id=dd.department_id;
+
+select last_name, department_name, ee.department_id from employees ee inner join departments dd on ee.department_id=dd.department_id
+join locations ll on dd.location_id = ll.location_id;
+
+
+select last_name, department_name, ee.department_id from employees ee inner join departments dd on ee.department_id=dd.department_id
+and ee.manager_id = dd.manager_id;
+
+
+select last_name, department_name, ee.department_id from employees ee cross join departments dd;
+
+select last_name, department_name, ee.department_id from employees ee right join departments dd on ee.department_id=dd.department_id
+and ee.manager_id = dd.manager_id;
+
+
+select last_name, department_name, ee.department_id from employees ee  full join departments dd on ee.department_id=dd.department_id
+and ee.manager_id = dd.manager_id;
+
+
+select * from employees natural join departments;
+
+
+select * from employees e left join jobs j on e.job_id = j.job_id right join departments d on e.department_id = d.department_id;
+
+
+select * from employees e left join jobs j on e.job_id = j.job_id right join departments d using(department_id);
+
+select e1.last_name, e1.employee_id, e1.manager_id, e2.last_name from employees e1 join employees e2 on e1.manager_id = e2.employee_id;
+
+select * from employees, job_grades where salary between lowest_sal and highest_sal;
+HOMEWORK
+select last_name, job_title, salary, department_name from employees ee, departments dd, jobs jj where ee.department_id = dd.department_id and ee.job_id = jj.job_id;
+
+select last_name, job_title, salary, department_name from employees ee, departments dd, jobs jj where ee.department_id = dd.department_id and ee.job_id = jj.job_id;
+where job_id like 'SA%';
+
+select last_name, job_title, salary, department_name from employees ee, departments dd, jobs jj where ee.department_id = dd.department_id and ee.job_id = jj.job_id;
+where ee.department_id in (50,60)
+
+
+
+
+select last_name, first_name, location_id from employees ee, departments dd where ee.department_id = dd.department_id and location_id = 1700;
+
+select  location_id, max(salary) from employees ee, departments dd where ee.department_id = dd.department_id and location_id = 1700
+group by location_id;
+
+6. Poka¿ pracowników i ich grupy zaszeregowania.
+select last_name, grade_level from employees e, job_grades where e.salary >= lowest_sal and e.salary<=highest_sal;
+
+7. Który urzêdnik (CLERK w kodzie stanowiska) jest w grupie B?
+select last_name, grade_level from employees e, job_grades where e.salary >= lowest_sal and e.salary<=highest_sal and job_id like '%CLERK' and grade_level='B';
+
+select first_name, last_name, months_between(sysdate, hire_date)/12 from employees ee, departments dd where ee.department_id = dd.department_id 
+and department_name = 'Shipping' and months_between(sysdate, hire_date)/12 > 19;
+
+select postal_code, city, street_address, country_name from locations ll left join countries cc on ll.country_id = cc.country_id;
+
+select last_name, ee.department_id, department_name from employees ee left join departments dd on ee.department_id = dd.department_id;
+
+select last_name, jj.job_id, ee.department_id, department_name from employees ee left join departments dd on ee.department_id = dd.department_id
+left join locations ll on ll.location_id = dd.location_id left join jobs jj on ee.job_id = jj.job_id where city = 'Toronto';
+
+select e1.employee_id, e1.last_name, e2.employee_id as manager_id, e2.last_name as manager_last_name from employees e1 join employees e2 on e1.manager_id = e2.employee_id;
+
+select e1.employee_id, e1.last_name, e2.employee_id as manager_id, e2.last_name as manager_last_name from employees e1 left join employees e2 on e1.manager_id = e2.employee_id;
+
+select dd.department_id, ll.location_id from departments dd right join locations ll on dd.location_id = ll.location_id where dd.location_id is null;
+
+select last_name, job_title, salary, department_name, grade_level from employees ee join jobs jj on ee.job_id = jj.job_id left join departments dd
+on ee.department_id = dd.department_id join job_grades on salary between lowest_sal and highest_sal where salary > 4000;
+
+select first_name, last_name, region_name from employees ee join departments dd on ee.department_id = dd.department_id 
+join locations ll on ll.location_id = dd.location_id join countries cc on ll.country_id = cc.country_id
+join regions rr on cc.region_id = rr.region_id where region_name = 'Europe';
+
